@@ -10,7 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test": "node --test --experimental-strip-types tests/grammar-reader.test.ts tests/cnf-validator.test.ts tests/cfg-minimization.test.ts"
+		"test": "node --test --experimental-strip-types tests/grammar-reader.test.ts tests/cnf-validator.test.ts tests/cfg-minimization.test.ts tests/cyk.test.ts"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.18.2",
