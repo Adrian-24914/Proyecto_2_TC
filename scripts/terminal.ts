@@ -45,7 +45,9 @@ if (initialValidation.isValid) {
 	grammar = conversion.grammar;
 }
 
+const cykStart = performance.now();
 const result = runCyk(grammar, tokens);
+const cykDuration = performance.now() - cykStart;
 
 console.log('\n=== PROCESO CYK ===');
 if (result.table.length === 0) {
@@ -63,6 +65,7 @@ if (result.table.length === 0) {
 
 console.log('\n=== RESULTADO ===');
 console.log(result.isAccepted ? 'CADENA ACEPTADA' : 'CADENA RECHAZADA');
+console.log(`Tiempo de ejecución CYK: ${cykDuration.toFixed(3)} ms`);
 
 if (result.parseTree !== null) {
 	console.log('\nÁrbol sintáctico:');
