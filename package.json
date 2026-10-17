@@ -11,7 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"cfg": "node --experimental-strip-types scripts/terminal.ts",
-		"test": "node --test --experimental-strip-types tests/grammar-reader.test.ts tests/cnf-validator.test.ts tests/cfg-minimization.test.ts tests/cyk.test.ts"
+		"test": "node --test --experimental-strip-types tests/grammar-reader.test.ts tests/cnf-validator.test.ts tests/cfg-minimization.test.ts tests/cyk.test.ts tests/sentence-tokenizer.test.ts"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.18.2",
