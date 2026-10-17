@@ -5,6 +5,8 @@
 	import { locales, localizeHref } from '#lib/paraglide/runtime.js';
 	import favicon from '#lib/assets/favicon.svg';
 	import type { LayoutProps } from './$types';
+	import 'latex.css/style.css';
+	import 'katex/dist/katex.min.css';
 
 	let { children }: LayoutProps = $props();
 </script>

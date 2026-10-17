@@ -26,5 +26,10 @@
 	"imports": {
 		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*"
+	},
+	"dependencies": {
+		"@viz-js/viz": "^3.31.0",
+		"katex": "^0.19.0",
+		"latex.css": "^1.14.0"
 	}
 }
