@@ -113,4 +113,4 @@ test('rechaza tokens vacíos y no modifica la entrada', () => {
 	assert.throws(() => runCyk(grammar, ['']), /no pueden estar vacíos/u);
 	runCyk(grammar, tokens);
 	assert.deepEqual(tokens, ['a']);
-});
+}); 
