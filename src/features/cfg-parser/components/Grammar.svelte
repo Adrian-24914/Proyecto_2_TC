@@ -116,24 +116,33 @@
 	</table>
 
 	{#if editable}
-		<label class="editor">
-			<span>Editar gramática</span>
+		<section class="code-listing" aria-label="Edición de gramática fuente">
+			<div class="listing-header">
+				<span class="listing-title">Editor de gramática</span>
+				<span class="listing-format">formato: <code>S -&gt; a S b | &epsilon;</code></span>
+			</div>
+			
 			<textarea
 				bind:this={textarea}
 				value={draft}
-				rows={Math.max(5, draft.split('\n').length + 1)}
+				rows={Math.max(4, draft.split('\n').length)}
 				spellcheck="false"
+				aria-label="Código de la gramática"
 				oninput={(e) => handleInput(e.currentTarget.value)}
 			></textarea>
-		</label>
-		<p class="hint">Formato: <code>S -&gt; a S b | &epsilon;</code> (usa espacios entre símbolos).</p>
-		{#if error}<p class="error" role="alert">{error}</p>{/if}
+
+			{#if error}
+				<p class="listing-error" role="alert">
+					<strong>Error sintáctico:</strong> {error}
+				</p>
+			{/if}
+		</section>
 	{/if}
 </article>
 
 <style>
 	.grammar {
-		margin:0.9rem 0;
+		margin: 0.9rem 0;
 		padding: 0.5rem 0 1.5rem;
 		background: #ffffff;
 		color: #000000;
@@ -192,6 +201,7 @@
 		border-collapse: collapse;
 		width: fit-content;
 		max-width: 100%;
+		margin-bottom: 1.5rem;
 	}
 	.productions td {
 		padding: 0 0.3rem;
@@ -212,45 +222,80 @@
 		padding-right: 0;
 	}
 
-	.editor {
-		display: block;
-		margin-top: 1.5rem;
-		font-weight: 700;
+	.code-listing {
+		margin-top: 1.75rem;
+		border-top: 0.5pt solid #000000;
+		border-bottom: 0.5pt solid #000000;
+		padding: 0.4rem 0 0.6rem;
+		background: #fafaf9;
 	}
+
+	.listing-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		padding: 0 0.5rem 0.3rem;
+		font-size: 0.8rem;
+		border-bottom: 0.5pt solid #dedede;
+	}
+
+	.listing-title {
+		font-variant: small-caps;
+		letter-spacing: 0.05em;
+		font-weight: 700;
+		color: #333333;
+	}
+
+	.listing-format {
+		color: #666666;
+	}
+
+	.listing-format code {
+		font-family: 'Latin Modern Mono', monospace;
+		font-size: 0.82rem;
+		color: #000000;
+	}
+
 	textarea {
+		display: block;
 		box-sizing: border-box;
 		width: 100%;
-		margin-top: 0.4rem;
-		padding: 0.75rem;
-		border: 1px solid #000000;
-		background: #ffffff;
+		border: none;
+		border-left: 2px solid #000000;
+		background: transparent;
 		color: #000000;
+		margin: 0.4rem 0 0;
+		padding: 0.3rem 0.75rem;
 		box-shadow: none;
 		border-radius: 0;
 		font-family: 'Latin Modern Mono', monospace;
 		font-size: 0.95rem;
-		line-height: 1.5;
+		line-height: 1.6;
 		resize: vertical;
+		outline: none;
 	}
+
 	textarea:focus {
-		outline: 1.5px solid #000000;
-		outline-offset: 1px;
+		background: #ffffff;
+		border-left: 2px solid #000000;
 	}
-	.hint, .error {
-		margin-top: 0.4rem;
+
+	.listing-error {
+		margin: 0.4rem 0.5rem 0;
+		padding-top: 0.35rem;
+		border-top: 0.5pt dashed #990000;
 		font-size: 0.85rem;
-	}
-	.hint {
-		color: #555555;
-	}
-	.error {
 		color: #990000;
-		font-weight: 700;
+		line-height: 1.4;
 	}
 
 	@media (max-width: 560px) {
 		dl > div {
 			align-items: flex-start;
+		}
+		.listing-header {
+			flex-direction: column;
+			gap: 0.2rem;
 		}
 	}
 </style>

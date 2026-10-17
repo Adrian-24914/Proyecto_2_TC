@@ -32,19 +32,19 @@
 	let conversion = $derived(convertToChomskyNormalForm(grammar));
 	let normalizationSteps = $derived([
 		{
-			heading: 'Paso 1 (Eliminación de producciones ε).',
+			heading: 'Paso 1: eliminación de producciones ε.',
 			grammar: conversion.withoutEpsilonProductions
 		},
 		{
-			heading: 'Paso 2 (Eliminación de producciones unitarias).',
+			heading: 'Paso 2: eliminación de producciones unitarias.',
 			grammar: conversion.withoutUnitProductions
 		},
 		{
-			heading: 'Paso 3 (Eliminación de símbolos inútiles).',
+			heading: 'Paso 3: eliminación de símbolos inútiles.',
 			grammar: conversion.withoutUselessSymbols
 		},
 		{
-			heading: 'Resultado (Forma Normal de Chomsky).',
+			heading: 'Paso 4 (final): forma normal de Chomsky.',
 			grammar: conversion.grammar
 		}
 	]);
@@ -95,7 +95,7 @@
 	/>
 
 	<section aria-labelledby="cnf-heading">
-		<h2 id="cnf-heading" class="section-title">1. Conversión a Forma Normal de Chomsky</h2>
+		<h2 id="cnf-heading" class="section-title">1. Simplificación de la gramática</h2>
 		<GrammarContainer steps={normalizationSteps} />
 	</section>
 </main>
