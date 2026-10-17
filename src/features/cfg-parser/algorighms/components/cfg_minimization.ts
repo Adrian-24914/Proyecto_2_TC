@@ -110,8 +110,19 @@ function isolateTerminals(
 	const terminalProducers = new Map<string, string>();
 	const helperProductions: Production[] = [];
 
+		const productionCount = new Map<string, number>();
 	for (const production of grammar.productions) {
-		if (production.right.length === 1 && grammar.terminals.has(production.right[0]!)) {
+		productionCount.set(production.left, (productionCount.get(production.left) ?? 0) + 1);
+	}
+
+	// Solo se reutiliza un no terminal cuya única producción es `A -> terminal`;
+	// si tuviera otras producciones, el reemplazo ampliaría el lenguaje.
+	for (const production of grammar.productions) {
+		if (
+			production.right.length === 1 &&
+			grammar.terminals.has(production.right[0]!) &&
+			productionCount.get(production.left) === 1
+		) {
 			terminalProducers.set(production.right[0]!, production.left);
 		}
 	}
