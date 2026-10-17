@@ -5,6 +5,7 @@ import {
 	runCyk,
 	type ParseTreeNode,
 } from '../src/features/cfg-parser/algorighms/components/cyk.ts';
+import { tokenizeSentence } from '../src/features/cfg-parser/algorighms/components/sentence-tokenizer.ts';
 import { convertToChomskyNormalForm } from '../src/features/cfg-parser/algorighms/components/cfg_minimization.ts';
 import {
 	parseGrammar,
@@ -20,12 +21,17 @@ const inputText = await readFile(
 	'utf8',
 );
 const sourceGrammar = parseGrammar(grammarText);
-const tokens = inputText.trim() === '' ? [] : inputText.trim().split(/\s+/u);
+const tokens = tokenizeSentence(inputText);
+if (tokens.length === 0) {
+	console.log('La frase está vacía: escriba una frase en cfg-input/cadena.txt');
+	process.exit(1);
+}
 const initialValidation = validateChomskyNormalForm(sourceGrammar);
 
 console.log('=== ENTRADA ===');
 printGrammar('Gramática ingresada', sourceGrammar);
-console.log(`Cadena: ${tokens.length === 0 ? 'ε' : tokens.join(' ')}`);
+console.log(`Frase: ${inputText.trim()}`);
+console.log(`Tokens: ${tokens.join(' ')}`);
 
 let grammar = sourceGrammar;
 if (initialValidation.isValid) {
@@ -64,7 +70,7 @@ if (result.table.length === 0) {
 }
 
 console.log('\n=== RESULTADO ===');
-console.log(result.isAccepted ? 'CADENA ACEPTADA' : 'CADENA RECHAZADA');
+console.log(result.isAccepted ? 'SÍ' : 'NO');
 console.log(`Tiempo de ejecución CYK: ${cykDuration.toFixed(3)} ms`);
 
 if (result.parseTree !== null) {

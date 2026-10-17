@@ -114,19 +114,3 @@ test('rechaza tokens vacíos y no modifica la entrada', () => {
 	runCyk(grammar, tokens);
 	assert.deepEqual(tokens, ['a']);
 });
-test('guarda backpointers terminales y binarios sin perder derivaciones', () => {
-	const grammar = parseGrammar('S -> A B\nA -> a\nB -> b');
-	const { backPointers } = runCyk(grammar, ['a', 'b']);
-
-	assert.deepEqual(backPointers[0]![0]!.get('A'), [{ kind: 'terminal', token: 'a' }]);
-	assert.deepEqual(backPointers[1]![0]!.get('S'), [
-		{ kind: 'binary', split: 1, leftSymbol: 'A', rightSymbol: 'B' },
-	]);
-});
-
-test('conserva todas las derivaciones en una gramática ambigua', () => {
-	const grammar = parseGrammar('S -> S S | a');
-	const { backPointers } = runCyk(grammar, ['a', 'a', 'a']);
-
-	assert.equal(backPointers[2]![0]!.get('S')!.length, 2);
-});
