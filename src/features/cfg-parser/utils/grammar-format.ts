@@ -42,9 +42,9 @@ export function renderSet(symbols: Iterable<string>): string {
 	return renderMath(`\\{${[...symbols].map(escapeMath).join(',\\;')}\\}`);
 }
 
-export function renderProductionRule(left: string, alternatives: string[][]): string {
+export function renderProductionRight(alternatives: string[][]): string {
 	const right = alternatives
 		.map((syms) => (syms.length === 0 ? '\\varepsilon' : syms.map(escapeMath).join('\\,')))
 		.join(' \\mid ');
-	return renderMath(`${escapeMath(left)} \\rightarrow ${right}`);
+	return renderMath(right);
 }

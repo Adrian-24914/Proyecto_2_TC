@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { parseGrammar, type Grammar } from '../algorighms/components/grammar-reader.ts';
-	import { groupProductions, grammarToSource, escapeMath, renderMath, renderProductionRule } from '../utils/grammar-format.ts';
+	import { groupProductions, grammarToSource, escapeMath, renderMath, renderProductionRight } from '../utils/grammar-format.ts';
 
 	interface Props {
 		grammar: Grammar;
@@ -64,7 +64,7 @@
 <article class="grammar" class:editable>
 	<p class="heading"><strong>{heading}</strong></p>
 
-	<p>{#if editable} Sea la gramática {/if} {@html renderMath('G = (V, \\Sigma, R, S)')}, donde:</p>
+	<p>Sea la gramática {@html renderMath('G = (V, \\Sigma, R, S)')}, donde:</p>
 
 	<dl>
 		<div>
@@ -85,13 +85,17 @@
 
 	<p>Y las reglas de producción ({@html renderMath('R')}):</p>
 
-	<ul class="productions" aria-label="Reglas de producción">
-		{#each groupedProductions as { left, alternatives } (left)}
-			<li>
-				<span>{@html renderProductionRule(left, alternatives)}</span>
-			</li>
-		{/each}
-	</ul>
+	<table class="productions" aria-label="Reglas de producción">
+		<tbody>
+			{#each groupedProductions as { left, alternatives } (left)}
+				<tr>
+					<td class="production-variable">{@html renderMath(escapeMath(left))}</td>
+					<td class="production-arrow">{@html renderMath('\\rightarrow')}</td>
+					<td class="production-right">{@html renderProductionRight(alternatives)}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 
 	{#if editable}
 		<label class="editor">
@@ -157,18 +161,37 @@
 		white-space: nowrap;
 	}
 
+	.productions,
+	.productions tbody,
+	.productions tr,
+	.productions td {
+		border: none !important;
+		outline: none !important;
+		box-shadow: none !important;
+	}
+
 	.productions {
-		list-style: none;
-		padding: 0;
+		border-collapse: collapse;
 		width: fit-content;
 		max-width: 100%;
-		margin: 1rem auto 1.5rem;
 	}
-	.productions li {
-		display: flex;
-		align-items: baseline;
+	.productions td {
+		padding: 0 0.3rem;
+		vertical-align: baseline;
+		text-align: left;
 		min-height: 1.8rem;
 		font-size: 1.05rem;
+	}
+	.productions .production-variable {
+		padding-left: 0;
+		text-align: right;
+		white-space: nowrap;
+	}
+	.productions .production-arrow {
+		white-space: nowrap;
+	}
+	.productions .production-right {
+		padding-right: 0;
 	}
 
 	.editor {
