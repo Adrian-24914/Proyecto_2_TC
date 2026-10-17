@@ -2,6 +2,7 @@
 	import { convertToChomskyNormalForm } from './algorighms/components/cfg_minimization.ts';
 	import { parseGrammar, type Grammar as GrammarData } from './algorighms/components/grammar-reader.ts';
 	import Grammar from './components/Grammar.svelte';
+	import GrammarContainer from './components/GrammarContainer.svelte';
 
 	function dedent(str: string): string {
 		return str
@@ -29,6 +30,24 @@
 
 	let grammar = $state(parseGrammar(initialSource));
 	let conversion = $derived(convertToChomskyNormalForm(grammar));
+	let normalizationSteps = $derived([
+		{
+			heading: 'Paso 1 (Eliminación de producciones ε).',
+			grammar: conversion.withoutEpsilonProductions
+		},
+		{
+			heading: 'Paso 2 (Eliminación de producciones unitarias).',
+			grammar: conversion.withoutUnitProductions
+		},
+		{
+			heading: 'Paso 3 (Eliminación de símbolos inútiles).',
+			grammar: conversion.withoutUselessSymbols
+		},
+		{
+			heading: 'Resultado (Forma Normal de Chomsky).',
+			grammar: conversion.grammar
+		}
+	]);
 
 	function updateGrammar(updated: GrammarData): void {
 		grammar = updated;
@@ -77,22 +96,7 @@
 
 	<section aria-labelledby="cnf-heading">
 		<h2 id="cnf-heading" class="section-title">1. Conversión a Forma Normal de Chomsky</h2>
-		<Grammar
-			grammar={conversion.withoutEpsilonProductions}
-			heading="Paso 1 (Eliminación de producciones ε)."
-		/>
-		<Grammar
-			grammar={conversion.withoutUnitProductions}
-			heading="Paso 2 (Eliminación de producciones unitarias)."
-		/>
-		<Grammar
-			grammar={conversion.withoutUselessSymbols}
-			heading="Paso 3 (Eliminación de símbolos inútiles)."
-		/>
-		<Grammar
-			grammar={conversion.grammar}
-			heading="Resultado (Forma Normal de Chomsky)."
-		/>
+		<GrammarContainer steps={normalizationSteps} />
 	</section>
 </main>
 
@@ -120,7 +124,7 @@
 
 	.paper {
 		width: 100%;
-		max-width: 52rem;
+		max-width: 48rem;
 		margin: 0 auto;
 		min-height: 842px;
 		background: #ffffff;
@@ -132,7 +136,7 @@
 	}
 
 	header {
-		margin: 0 0 3.5rem;
+		margin: 0 0 1.5rem;
 		text-align: center;
 	}
 
@@ -175,7 +179,7 @@
 
 
 	.abstract {
-		max-width: 32rem;
+		max-width: 40rem;
 		margin: 0 auto;
 		text-align: justify;
 		text-justify: inter-word;
@@ -214,7 +218,7 @@
 
 		.paper {
 			box-shadow: none;
-			padding: 2.5rem 1.25rem 4rem;
+			padding: 1.5rem 1.25rem 4rem;
 			min-height: auto;
 		}
 

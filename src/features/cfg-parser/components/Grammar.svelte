@@ -64,21 +64,39 @@
 <article class="grammar" class:editable>
 	<p class="heading"><strong>{heading}</strong></p>
 
-	<p>Sea la gramática {@html renderMath('G = (V, \\Sigma, R, S)')}, donde:</p>
+	{#if editable} <p>Sea la gramática {@html renderMath('G = (V, \\Sigma, R, S)')}, donde:</p> {/if}
 
 	<dl>
 		<div>
-			<dt>Variables ({@html renderMath('V')}):</dt>
+			<dt>
+				{#if editable}
+					Variables ({@html renderMath('V')}):
+				{:else}
+					{@html renderMath('V')}:
+				{/if}
+			</dt>
 			<dd>{@render symbolSet(currentGrammar.nonTerminals)}</dd>
 		</div>
 
 		<div>
-			<dt>Terminales ({@html renderMath('\\Sigma')}):</dt>
+			<dt>
+				{#if editable}
+					Terminales ({@html renderMath('\\Sigma')}):
+				{:else}
+					{@html renderMath('\\Sigma')}:
+				{/if}
+			</dt>
 			<dd>{@render symbolSet(currentGrammar.terminals)}</dd>
 		</div>
 
 		<div>
-			<dt>Símbolo inicial ({@html renderMath('S')}):</dt>
+			<dt>
+				{#if editable}
+					Símbolo inicial ({@html renderMath('S')}):
+				{:else}
+					{@html renderMath('S')}:
+				{/if}
+			</dt>
 			<dd><span class="set">{@html renderMath(escapeMath(currentGrammar.startSymbol))}</span></dd>
 		</div>
 	</dl>
@@ -115,7 +133,7 @@
 
 <style>
 	.grammar {
-		margin: 2rem 0;
+		margin:0.9rem 0;
 		padding: 0.5rem 0 1.5rem;
 		background: #ffffff;
 		color: #000000;
