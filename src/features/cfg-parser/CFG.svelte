@@ -15,6 +15,25 @@
 			.join('\n');
 	}
 
+	function runTimedCyk(grammar: GrammarData, tokens: readonly string[]) {
+		const startedAt = performance.now();
+		const result = runCyk(grammar, tokens);
+		let durationMs = performance.now() - startedAt;
+
+		if (durationMs <= 1) {
+			const benchmarkStartedAt = performance.now();
+			let samples = 0;
+			do {
+				runCyk(grammar, tokens);
+				samples++;
+				durationMs = performance.now() - benchmarkStartedAt;
+			} while (durationMs < 8 && samples < 1000);
+			durationMs /= samples;
+		}
+
+		return { result, durationMs };
+	}
+
 	const initialSource = dedent(`
 		S -> NP VP
 		VP -> VP PP
@@ -35,7 +54,7 @@
 	let conversion = $derived(convertToChomskyNormalForm(grammar));
 	let sentence = $state('She eats a cake with a fork');
 	let sentenceTokens = $derived(tokenizeSentence(sentence));
-	let cykResult = $derived(runCyk(conversion.grammar, sentenceTokens));
+	let cykExecution = $derived(runTimedCyk(conversion.grammar, sentenceTokens));
 	let normalizationSteps = $derived([
 		{
 			heading: 'Paso 1: eliminación de producciones ε.',
@@ -111,7 +130,8 @@
 	<section aria-labelledby="cyk-heading">
 		<h2 id="cyk-heading" class="section-title">3. Algoritmo Cocke-Younger-Kasami</h2>
 		<CYKRunner
-			result={cykResult}
+			result={cykExecution.result}
+			durationMs={cykExecution.durationMs}
 			{sentence}
 			onSentenceChange={(value) => (sentence = value)}
 		/>

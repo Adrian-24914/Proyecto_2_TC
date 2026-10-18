@@ -5,6 +5,7 @@
 
 	interface Props {
 		result: CykResult;
+		durationMs: number;
 		sentence: string;
 		onSentenceChange: (sentence: string) => void;
 		label?: string;
@@ -12,6 +13,7 @@
 
 	let {
 		result,
+		durationMs,
 		sentence,
 		onSentenceChange,
 		label = 'Construcción de la tabla CYK'
@@ -41,6 +43,12 @@
 
 	function fragment(start: number, length: number): string {
 		return result.tokens.slice(start, start + length).join(' ');
+	}
+
+	function formatDuration(duration: number): string {
+		if (duration === 0) return 'menos de 1 µs';
+		if (duration < 1) return `${(duration * 1000).toFixed(2)} µs`;
+		return `${duration.toFixed(3)} ms`;
 	}
 
 	$effect(() => {
@@ -147,6 +155,9 @@
 		{#if activeIndex === stepCount - 1}
 			<p class:accepted={result.isAccepted} class:rejected={!result.isAccepted} class="result">
 				La cadena <strong>{result.isAccepted ? 'pertenece' : 'no pertenece'}</strong> al lenguaje.
+				<span class="execution-time">
+					Tiempo promedio de ejecución CYK: <strong>{formatDuration(durationMs)}</strong>.
+				</span>
 			</p>
 
 			{#if result.isAccepted && result.parseTree}
@@ -328,6 +339,10 @@
 
 	.result {
 		margin-bottom: 0;
+	}
+
+	.execution-time {
+		display: block;
 	}
 
 	.accepted {
