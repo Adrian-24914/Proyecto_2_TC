@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { runCyk } from '../src/features/cfg-parser/algorighms/components/cyk.ts';
-import { parseGrammar } from '../src/features/cfg-parser/algorighms/components/grammar-reader.ts';
-import { tokenizeSentence } from '../src/features/cfg-parser/algorighms/components/sentence-tokenizer.ts';
+import { runCyk } from '../src/features/cfg-parser/algorithms/cyk.ts';
+import { parseGrammar } from '../src/features/cfg-parser/algorithms/grammar-reader.ts';
+import { tokenizeSentence } from '../src/features/cfg-parser/algorithms/sentence-tokenizer.ts';
 
 const englishGrammar = `
 S -> NP VP

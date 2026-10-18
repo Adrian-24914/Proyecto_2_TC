@@ -84,7 +84,7 @@
 </script>
 
 <svelte:head>
-	<title>Gramáticas libres de contexto</title>
+	<title>CFG Parser</title>
 	<meta
 		name="description"
 		content="Parsing de gramáticas libres de contexto"

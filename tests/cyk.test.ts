@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-import { convertToChomskyNormalForm } from '../src/features/cfg-parser/algorighms/components/cfg_minimization.ts';
+import { convertToChomskyNormalForm } from '../src/features/cfg-parser/algorithms/cfg_minimization.ts';
 import {
 	CykGrammarError,
 	runCyk,
-} from '../src/features/cfg-parser/algorighms/components/cyk.ts';
-import { parseGrammar } from '../src/features/cfg-parser/algorighms/components/grammar-reader.ts';
+} from '../src/features/cfg-parser/algorithms/cyk.ts';
+import { parseGrammar } from '../src/features/cfg-parser/algorithms/grammar-reader.ts';
 
 async function readFixture(name: string): Promise<string> {
 	return readFile(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');

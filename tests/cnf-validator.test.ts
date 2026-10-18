@@ -5,8 +5,8 @@ import test from 'node:test';
 import {
 	isInChomskyNormalForm,
 	validateChomskyNormalForm,
-} from '../src/features/cfg-parser/algorighms/components/cnf-validator.ts';
-import { parseGrammar } from '../src/features/cfg-parser/algorighms/components/grammar-reader.ts';
+} from '../src/features/cfg-parser/algorithms/cnf-validator.ts';
+import { parseGrammar } from '../src/features/cfg-parser/algorithms/grammar-reader.ts';
 
 async function readFixture(name: string): Promise<string> {
 	return readFile(new URL(`./fixtures/${name}`, import.meta.url), 'utf8');
