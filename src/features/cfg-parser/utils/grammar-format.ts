@@ -1,5 +1,5 @@
 import katex from 'katex';
-import type { Grammar } from '../algorighms/components/grammar-reader';
+import type { Grammar } from '../algorithms/grammar-reader';
 
 export interface GroupedProduction {
 	left: string;

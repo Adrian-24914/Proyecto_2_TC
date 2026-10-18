@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CykResult } from '../algorighms/components/cyk.ts';
+	import type { CykResult } from '../algorithms/cyk.ts';
 	import { escapeMath, renderMath } from '../utils/grammar-format.ts';
 	import ParseTree from './ParseTree.svelte';
 

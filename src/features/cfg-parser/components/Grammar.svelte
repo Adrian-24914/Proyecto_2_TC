@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { parseGrammar, type Grammar } from '../algorighms/components/grammar-reader.ts';
+	import { parseGrammar, type Grammar } from '../algorithms/grammar-reader.ts';
 	import { groupProductions, grammarToSource, escapeMath, renderMath, renderProductionRight, markWrappedAlternatives, renderSetItem} from '../utils/grammar-format.ts';
 
 	interface Props {

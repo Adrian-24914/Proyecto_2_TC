@@ -1,16 +1,16 @@
 import { readFile } from 'node:fs/promises';
 
-import { validateChomskyNormalForm } from '../src/features/cfg-parser/algorighms/components/cnf-validator.ts';
+import { validateChomskyNormalForm } from '../src/features/cfg-parser/algorithms/cnf-validator.ts';
 import {
 	runCyk,
 	type ParseTreeNode,
-} from '../src/features/cfg-parser/algorighms/components/cyk.ts';
-import { tokenizeSentence } from '../src/features/cfg-parser/algorighms/components/sentence-tokenizer.ts';
-import { convertToChomskyNormalForm } from '../src/features/cfg-parser/algorighms/components/cfg_minimization.ts';
+} from '../src/features/cfg-parser/algorithms/cyk.ts';
+import { tokenizeSentence } from '../src/features/cfg-parser/algorithms/sentence-tokenizer.ts';
+import { convertToChomskyNormalForm } from '../src/features/cfg-parser/algorithms/cfg_minimization.ts';
 import {
 	parseGrammar,
 	type Grammar,
-} from '../src/features/cfg-parser/algorighms/components/grammar-reader.ts';
+} from '../src/features/cfg-parser/algorithms/grammar-reader.ts';
 
 const grammarText = await readFile(
 	new URL('../cfg-input/gramatica.txt', import.meta.url),

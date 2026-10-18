@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ParseTreeNode } from '../algorighms/components/cyk.ts';
+	import type { ParseTreeNode } from '../algorithms/cyk.ts';
 	import { escapeMath, renderMath } from '../utils/grammar-format.ts';
 
 	interface Props {

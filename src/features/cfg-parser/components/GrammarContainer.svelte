@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Grammar as GrammarData } from '../algorighms/components/grammar-reader.ts';
+	import type { Grammar as GrammarData } from '../algorithms/grammar-reader.ts';
 	import Grammar from './Grammar.svelte';
 
 	interface GrammarStep {
