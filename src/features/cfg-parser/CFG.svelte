@@ -83,7 +83,7 @@
 		<section class="abstract" aria-label="Resumen">
 			<h2 class="abstract-title">Resumen</h2>
 			<p>
-				Aplicación para validar oraciones simples en inglés mediante gramáticas 
+    Aplicación para validar cadenas de texto mediante gramáticas
 				libres de contexto (CFG). El sistema convierte la gramática a 
 				Forma Normal de Chomsky (CNF), normaliza la frase de entrada y, 
 				a través del algoritmo CYK, evalúa su pertenencia al lenguaje reportando 

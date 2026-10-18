@@ -43,7 +43,17 @@
 				aria-label="Mostrar el paso anterior"
 			>←</button>
 
-			<p aria-live="polite">Paso {currentIndex + 1} de {steps.length}</p>
+			<nav class="indicators" aria-label="Seleccionar un paso de normalización">
+				{#each steps as step, index (step.heading)}
+					<button
+						type="button"
+						class:active={index === currentIndex}
+						aria-current={index === currentIndex ? 'step' : undefined}
+						aria-label={`Mostrar ${step.heading}`}
+						onclick={() => currentIndex = index}
+					>{index + 1}</button>
+				{/each}
+			</nav>
 
 			<button
 				type="button"
@@ -52,6 +62,8 @@
 				disabled={steps.length < 2}
 				aria-label="Mostrar el paso siguiente"
 			>→</button>
+
+			<p class="step-status" aria-live="polite">Paso {currentIndex + 1} de {steps.length}</p>
 		</div>
 
 		<div class="viewport">
@@ -60,17 +72,6 @@
 			{/key}
 		</div>
 
-		<nav class="indicators" aria-label="Seleccionar un paso de normalización">
-			{#each steps as step, index (step.heading)}
-				<button
-					type="button"
-					class:active={index === currentIndex}
-					aria-current={index === currentIndex ? 'step' : undefined}
-					aria-label={`Mostrar ${step.heading}`}
-					onclick={() => currentIndex = index}
-				>{index + 1}</button>
-			{/each}
-		</nav>
 	{:else}
 		<p class="empty">No hay pasos de normalización disponibles.</p>
 	{/if}
@@ -86,15 +87,21 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 1rem;
+		gap: 0.5rem;
+		overflow-x: auto;
+		padding-bottom: 0.25rem;
 	}
 
-	.controls p {
-		min-width: 7rem;
-		margin: 0;
-		text-align: center;
-		font-size: 0.9rem;
-		font-variant: small-caps;
+	.step-status {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	button {
@@ -124,6 +131,7 @@
 	}
 
 	.arrow {
+		flex: 0 0 auto;
 		width: 2.1rem;
 		height: 2.1rem;
 		padding: 0;
@@ -138,9 +146,8 @@
 	.indicators {
 		display: flex;
 		justify-content: center;
+		flex: 0 0 auto;
 		gap: 0.5rem;
-		padding-top: 0.9rem;
-		border-top: 0.5pt solid #000000;
 	}
 
 	.indicators button {

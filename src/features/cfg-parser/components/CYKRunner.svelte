@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { CykResult } from '../algorighms/components/cyk.ts';
 	import { escapeMath, renderMath } from '../utils/grammar-format.ts';
+	import ParseTree from './ParseTree.svelte';
 
 	interface Props {
 		result: CykResult;
@@ -73,7 +74,17 @@
 			aria-label="Mostrar el paso anterior"
 		>←</button>
 
-		<p aria-live="polite">Paso {activeIndex + 1} de {stepCount}</p>
+		<nav class="indicators" aria-label="Seleccionar un paso del algoritmo CYK">
+			{#each Array(stepCount) as _, index}
+				<button
+					type="button"
+					class:active={index === activeIndex}
+					aria-current={index === activeIndex ? 'step' : undefined}
+					aria-label={`Mostrar paso ${index + 1}: longitud ${result.table.length === 0 ? 0 : index + 1}`}
+					onclick={() => (currentIndex = index)}
+				>{index + 1}</button>
+			{/each}
+		</nav>
 
 		<button
 			type="button"
@@ -82,6 +93,8 @@
 			disabled={stepCount < 2}
 			aria-label="Mostrar el paso siguiente"
 		>→</button>
+
+		<p class="step-status" aria-live="polite">Paso {activeIndex + 1} de {stepCount}</p>
 	</div>
 
 	<div class="viewport">
@@ -135,20 +148,13 @@
 			<p class:accepted={result.isAccepted} class:rejected={!result.isAccepted} class="result">
 				La cadena <strong>{result.isAccepted ? 'pertenece' : 'no pertenece'}</strong> al lenguaje.
 			</p>
+
+			{#if result.isAccepted && result.parseTree}
+				<ParseTree tree={result.parseTree} />
+			{/if}
 		{/if}
 	</div>
 
-	<nav class="indicators" aria-label="Seleccionar un paso del algoritmo CYK">
-		{#each Array(stepCount) as _, index}
-			<button
-				type="button"
-				class:active={index === activeIndex}
-				aria-current={index === activeIndex ? 'step' : undefined}
-				aria-label={`Mostrar paso ${index + 1}: longitud ${result.table.length === 0 ? 0 : index + 1}`}
-				onclick={() => (currentIndex = index)}
-			>{index + 1}</button>
-		{/each}
-	</nav>
 </section>
 
 <style>
@@ -209,15 +215,21 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 1rem;
+		gap: 0.5rem;
+		overflow-x: auto;
+		padding-bottom: 0.25rem;
 	}
 
-	.controls p {
-		min-width: 7rem;
-		margin: 0;
-		text-align: center;
-		font-size: 0.9rem;
-		font-variant: small-caps;
+	.step-status {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	button {
@@ -247,6 +259,7 @@
 	}
 
 	.arrow {
+		flex: 0 0 auto;
 		width: 2.1rem;
 		height: 2.1rem;
 		padding: 0;
@@ -328,9 +341,8 @@
 	.indicators {
 		display: flex;
 		justify-content: center;
+		flex: 0 0 auto;
 		gap: 0.5rem;
-		padding-top: 0.9rem;
-		border-top: 0.5pt solid #000000;
 	}
 
 	.indicators button {
