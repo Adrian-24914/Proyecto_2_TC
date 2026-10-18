@@ -8,6 +8,7 @@
 		durationMs: number;
 		sentence: string;
 		onSentenceChange: (sentence: string) => void;
+		onRerun: () => void;
 		label?: string;
 	}
 
@@ -16,6 +17,7 @@
 		durationMs,
 		sentence,
 		onSentenceChange,
+		onRerun,
 		label = 'Construcción de la tabla CYK'
 	}: Props = $props();
 
@@ -40,7 +42,6 @@
 	const MAX_SCALE = 3.0;
 
 	function handlePointerDown(e: PointerEvent): void {
-		// Evitar arrastrar si se hace clic con botón secundario
 		if (e.button !== 0) return;
 		isDragging = true;
 		dragStartX = e.clientX;
@@ -74,7 +75,6 @@
 			Math.max(MIN_SCALE, direction > 0 ? scale * zoomFactor : scale / zoomFactor)
 		);
 
-		// Zoom focalizado en la posición actual del cursor
 		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
 		const mouseX = e.clientX - rect.left;
 		const mouseY = e.clientY - rect.top;
@@ -267,6 +267,7 @@
 				<span class="execution-time">
 					Tiempo promedio de ejecución CYK: <strong>{formatDuration(durationMs)}</strong>.
 				</span>
+				<button type="button" class="rerun" onclick={onRerun}>Volver a ejecutar CYK</button>
 			</p>
 
 			{#if result.isAccepted && result.parseTree}
@@ -396,7 +397,6 @@
 		text-align: center;
 	}
 
-	/* --- Contenedor de Pan & Zoom --- */
 	.interactive-stage {
 		position: relative;
 		border: 1px solid #e0e0dc;
@@ -450,7 +450,6 @@
 		transition: none;
 	}
 
-	/* --- Tabla CYK --- */
 	.cyk-table {
 		--cell-size: clamp(3.2rem, 10vw, 5.5rem);
 		padding: 1rem;
@@ -535,6 +534,13 @@
 
 	.execution-time {
 		display: block;
+	}
+
+	.rerun {
+		display: block;
+		margin: 0.75rem auto 0;
+		padding: 0.35rem 0.8rem;
+		font-size: 0.9rem;
 	}
 
 	.accepted {

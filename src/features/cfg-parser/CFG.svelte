@@ -54,7 +54,11 @@
 	let conversion = $derived(convertToChomskyNormalForm(grammar));
 	let sentence = $state('She eats a cake with a fork');
 	let sentenceTokens = $derived(tokenizeSentence(sentence));
-	let cykExecution = $derived(runTimedCyk(conversion.grammar, sentenceTokens));
+	let cykRun = $state(0);
+	let cykExecution = $derived.by(() => {
+		void cykRun;
+		return runTimedCyk(conversion.grammar, sentenceTokens);
+	});
 	let normalizationSteps = $derived([
 		{
 			heading: 'Paso 1: eliminación de producciones ε.',
@@ -134,6 +138,7 @@
 			durationMs={cykExecution.durationMs}
 			{sentence}
 			onSentenceChange={(value) => (sentence = value)}
+			onRerun={() => cykRun++}
 		/>
 	</section>
 </main>
