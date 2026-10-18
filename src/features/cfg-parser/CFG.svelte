@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { convertToChomskyNormalForm } from './algorighms/components/cfg_minimization.ts';
+	import { runCyk } from './algorighms/components/cyk.ts';
 	import { parseGrammar, type Grammar as GrammarData } from './algorighms/components/grammar-reader.ts';
+	import { tokenizeSentence } from './algorighms/components/sentence-tokenizer.ts';
+	import CYKRunner from './components/CYKRunner.svelte';
 	import Grammar from './components/Grammar.svelte';
 	import GrammarContainer from './components/GrammarContainer.svelte';
 
@@ -30,6 +33,9 @@
 
 	let grammar = $state(parseGrammar(initialSource));
 	let conversion = $derived(convertToChomskyNormalForm(grammar));
+	let sentence = $state('She eats a cake with a fork');
+	let sentenceTokens = $derived(tokenizeSentence(sentence));
+	let cykResult = $derived(runCyk(conversion.grammar, sentenceTokens));
 	let normalizationSteps = $derived([
 		{
 			heading: 'Paso 1: eliminación de producciones ε.',
@@ -97,9 +103,18 @@
 		/>
 	</section>
 
-	<section aria-labelledby="cnf-heading">
-		<h2 id="cnf-heading" class="section-title">2. Simplificación de la gramática</h2>
+	<section aria-labelledby="normalization-heading">
+		<h2 id="normalization-heading" class="section-title">2. Simplificación de la gramática</h2>
 		<GrammarContainer steps={normalizationSteps} />
+	</section>
+
+	<section aria-labelledby="cyk-heading">
+		<h2 id="cyk-heading" class="section-title">3. Algoritmo Cocke-Younger-Kasami</h2>
+		<CYKRunner
+			result={cykResult}
+			{sentence}
+			onSentenceChange={(value) => (sentence = value)}
+		/>
 	</section>
 </main>
 
