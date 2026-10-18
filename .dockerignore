@@ -1,0 +1,12 @@
+.git
+.DS_Store
+.svelte-kit
+.pnpm-store
+build
+node_modules
+tests
+.env
+.env.*
+Dockerfile*
+compose*.yml
+compose*.yaml

@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@viz-js/viz':
-        specifier: ^3.31.0
-        version: 3.31.0
       katex:
         specifier: ^0.19.0
         version: 0.19.0
@@ -21,9 +18,9 @@ importers:
       '@inlang/paraglide-js':
         specifier: ^2.18.2
         version: 2.26.0(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0))
-      '@sveltejs/adapter-auto':
-        specifier: ^8.0.0
-        version: 8.0.0(@sveltejs/kit@3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2)(vite@8.3.4(jiti@2.7.0)))(svelte@5.57.2)(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0)))
+      '@sveltejs/adapter-static':
+        specifier: ^4.0.0
+        version: 4.0.0(@sveltejs/kit@3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2)(vite@8.3.4(jiti@2.7.0)))(svelte@5.57.2)(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0)))
       '@sveltejs/kit':
         specifier: ^3.0.0
         version: 3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2)(vite@8.3.4(jiti@2.7.0)))(svelte@5.57.2)(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0))
@@ -410,8 +407,8 @@ packages:
     peerDependencies:
       acorn: ^8.9.0
 
-  '@sveltejs/adapter-auto@8.0.0':
-    resolution: {integrity: sha512-CKOwUS865xfoZn3CpM868slPfitsQ4vmxAR/yOfTIguAwStgkhjhzV0zEhmkzPalH338LJ9XnQX9vfQeY7220A==}
+  '@sveltejs/adapter-static@4.0.0':
+    resolution: {integrity: sha512-aF1J23R1ebKqUxQ4/qLr/Lxu63NFmLAtg8UZl3HFLxaoA1D/nhTVGcD9lTqx65iUbjNR2iOL0TgOxSX82x6Paw==}
     peerDependencies:
       '@sveltejs/kit': ^3.0.0-next.0
 
@@ -447,9 +444,6 @@ packages:
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
-
-  '@viz-js/viz@3.31.0':
-    resolution: {integrity: sha512-r7zlQdRvcwvIpjHGgs+KNWHeE/P5/Dq7k8ZAKaMCbZqomxCBJV78gVuQYaHzFVca+kB0mX0fMW9UFevCOBG50A==}
 
   acorn@8.19.0:
     resolution: {integrity: sha512-oJlA3XiRm7Cyk6qFD2Jn8ak9B7jSy0qy00ADO3+8dpT0LSjFihQYv4C02LFCSYJV3Q37xYwwRy5m+IpIiUzqWw==}
@@ -1060,7 +1054,7 @@ snapshots:
     dependencies:
       acorn: 8.19.0
 
-  '@sveltejs/adapter-auto@8.0.0(@sveltejs/kit@3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2)(vite@8.3.4(jiti@2.7.0)))(svelte@5.57.2)(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0)))':
+  '@sveltejs/adapter-static@4.0.0(@sveltejs/kit@3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2)(vite@8.3.4(jiti@2.7.0)))(svelte@5.57.2)(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0)))':
     dependencies:
       '@sveltejs/kit': 3.0.1(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.2)(vite@8.3.4(jiti@2.7.0)))(svelte@5.57.2)(typescript@6.0.3)(vite@8.3.4(jiti@2.7.0))
 
@@ -1097,8 +1091,6 @@ snapshots:
     optional: true
 
   '@types/estree@1.0.9': {}
-
-  '@viz-js/viz@3.31.0': {}
 
   acorn@8.19.0: {}
 
