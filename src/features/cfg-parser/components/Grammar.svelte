@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { parseGrammar, type Grammar } from '../algorighms/components/grammar-reader.ts';
-	import { groupProductions, grammarToSource, escapeMath, renderMath, renderProductionRight } from '../utils/grammar-format.ts';
+	import { groupProductions, grammarToSource, escapeMath, renderMath, renderProductionRight, markWrappedAlternatives, renderSetItem} from '../utils/grammar-format.ts';
 
 	interface Props {
 		grammar: Grammar;
@@ -12,7 +12,7 @@
 
 	let {
 		grammar,
-		heading = 'Definición 1.1 (Gramática Libre de Contexto).',
+		heading = '',
 		editable = false,
 		source,
 		onGrammarChange
@@ -40,12 +40,6 @@
 		} catch (cause) {
 			error = cause instanceof Error ? cause.message : 'La gramática no es válida';
 		}
-	}
-
-	function renderSetItem(symbol: string, index: number, size: number): string {
-		const openingBrace = index === 0 ? '\\{' : '';
-		const ending = index === size - 1 ? '\\}' : ',\\;';
-		return renderMath(`${openingBrace}${escapeMath(symbol)}${ending}`);
 	}
 </script>
 
@@ -109,7 +103,22 @@
 				<tr>
 					<td class="production-variable">{@html renderMath(escapeMath(left))}</td>
 					<td class="production-arrow">{@html renderMath('\\rightarrow')}</td>
-					<td class="production-right">{@html renderProductionRight(alternatives)}</td>
+					<td class="production-right">
+						<span class="production-alternatives" use:markWrappedAlternatives={alternatives}>
+							{#each alternatives as alternative, index}
+								<span class="production-alternative">
+									{#if index > 0}
+										<span class="continuation-prefix" aria-hidden="true">
+											{@html renderMath(escapeMath(left))}
+											{@html renderMath('\\rightarrow')}
+										</span>
+										<span class="production-separator">{@html renderMath('\\mid')}</span>
+									{/if}
+									{@html renderProductionRight([alternative])}
+								</span>
+							{/each}
+						</span>
+					</td>
 				</tr>
 			{/each}
 		</tbody>
@@ -200,8 +209,8 @@
 	.productions {
 		border-collapse: collapse;
 		width: fit-content;
-		max-width: 100%;
-		margin-bottom: 1.5rem;
+		max-width: min(100%, 25rem);
+		margin: 1rem auto 1.5rem;
 	}
 	.productions td {
 		padding: 0 0.3rem;
@@ -220,6 +229,37 @@
 	}
 	.productions .production-right {
 		padding-right: 0;
+	}
+	.production-alternatives {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		column-gap: 1.1rem;
+		max-width: 100%;
+	}
+	.production-alternative {
+		position: relative;
+		display: inline-flex;
+		align-items: baseline;
+		white-space: nowrap;
+	}
+	.production-separator {
+		position: absolute;
+		right: calc(100% + 0.35rem);
+	}
+	.continuation-prefix {
+		display: none;
+	}
+	.production-alternative:global(.line-start) .production-separator {
+		visibility: hidden;
+	}
+	.production-alternative:global(.line-start) .continuation-prefix {
+		position: absolute;
+		top: 0;
+		right: calc(100% + 0.6rem);
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.6rem;
 	}
 
 	.code-listing {

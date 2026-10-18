@@ -87,15 +87,18 @@
 		</section>
 	</header>
 
-	<Grammar
-		grammar={grammar}
-		source={initialSource}
-		editable
-		onGrammarChange={updateGrammar}
-	/>
+	<section aria-labelledby="cnf-heading">
+		<h2 id="cnf-heading" class="section-title">1. Definición de la gramática</h2>
+		<Grammar
+			grammar={grammar}
+			source={initialSource}
+			editable
+			onGrammarChange={updateGrammar}
+		/>
+	</section>
 
 	<section aria-labelledby="cnf-heading">
-		<h2 id="cnf-heading" class="section-title">1. Simplificación de la gramática</h2>
+		<h2 id="cnf-heading" class="section-title">2. Simplificación de la gramática</h2>
 		<GrammarContainer steps={normalizationSteps} />
 	</section>
 </main>
@@ -204,7 +207,7 @@
 	}
 
 	.section-title {
-		margin: 3.5rem 0 1.5rem;
+		margin: 3.5rem 0 0rem;
 		font-size: 1.35rem;
 		font-weight: 700;
 		text-align: left;

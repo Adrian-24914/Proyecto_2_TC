@@ -48,3 +48,37 @@ export function renderProductionRight(alternatives: string[][]): string {
 		.join(' \\mid ');
 	return renderMath(right);
 }
+
+
+export function renderSetItem(symbol: string, index: number, size: number): string {
+		const openingBrace = index === 0 ? '\\{' : '';
+		const ending = index === size - 1 ? '\\}' : ',\\;';
+		return renderMath(`${openingBrace}${escapeMath(symbol)}${ending}`);
+}
+
+export function markWrappedAlternatives(node: HTMLElement, _alternatives: string[][]) {
+	let destroyed = false;
+	const update = () => {
+		if (destroyed) return;
+		let lineTop: number | undefined;
+		for (const child of node.children) {
+			const alternative = child as HTMLElement;
+			const startsLine = lineTop !== undefined && alternative.offsetTop > lineTop + 1;
+			alternative.classList.toggle('line-start', startsLine);
+			if (lineTop === undefined || startsLine) lineTop = alternative.offsetTop;
+		}
+	};
+
+	const observer = new ResizeObserver(update);
+	observer.observe(node);
+	queueMicrotask(update);
+	void document.fonts.ready.then(update);
+
+	return {
+		update: () => queueMicrotask(update),
+		destroy: () => {
+			destroyed = true;
+			observer.disconnect();
+		}
+	};
+}
