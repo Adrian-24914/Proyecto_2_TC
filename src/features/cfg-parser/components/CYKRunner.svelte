@@ -18,6 +18,7 @@
 		onSentenceChange,
 		label = 'Construcción de la tabla CYK'
 	}: Props = $props();
+
 	let currentIndex = $state(0);
 	let stepCount = $derived(Math.max(result.table.length, 1));
 	let activeIndex = $derived(Math.min(currentIndex, stepCount - 1));
@@ -26,6 +27,79 @@
 		result.table.map((cells, index) => ({ length: index + 1, cells })).reverse()
 	);
 
+	let scale = $state(1);
+	let translateX = $state(0);
+	let translateY = $state(0);
+	let isDragging = $state(false);
+	let dragStartX = 0;
+	let dragStartY = 0;
+	let initialTx = 0;
+	let initialTy = 0;
+
+	const MIN_SCALE = 0.4;
+	const MAX_SCALE = 3.0;
+
+	function handlePointerDown(e: PointerEvent): void {
+		// Evitar arrastrar si se hace clic con botón secundario
+		if (e.button !== 0) return;
+		isDragging = true;
+		dragStartX = e.clientX;
+		dragStartY = e.clientY;
+		initialTx = translateX;
+		initialTy = translateY;
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+	}
+
+	function handlePointerMove(e: PointerEvent): void {
+		if (!isDragging) return;
+		translateX = initialTx + (e.clientX - dragStartX);
+		translateY = initialTy + (e.clientY - dragStartY);
+	}
+
+	function handlePointerUp(e: PointerEvent): void {
+		if (!isDragging) return;
+		isDragging = false;
+		try {
+			(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+		} catch {
+		}
+	}
+
+	function handleWheel(e: WheelEvent): void {
+		e.preventDefault();
+		const zoomFactor = 1.1;
+		const direction = e.deltaY < 0 ? 1 : -1;
+		const newScale = Math.min(
+			MAX_SCALE,
+			Math.max(MIN_SCALE, direction > 0 ? scale * zoomFactor : scale / zoomFactor)
+		);
+
+		// Zoom focalizado en la posición actual del cursor
+		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		const mouseX = e.clientX - rect.left;
+		const mouseY = e.clientY - rect.top;
+
+		const ratio = newScale / scale;
+		translateX = mouseX - ratio * (mouseX - translateX);
+		translateY = mouseY - ratio * (mouseY - translateY);
+		scale = newScale;
+	}
+
+	function resetTransform(): void {
+		scale = 1;
+		translateX = 0;
+		translateY = 0;
+	}
+
+	function zoomIn(): void {
+		scale = Math.min(MAX_SCALE, scale * 1.2);
+	}
+
+	function zoomOut(): void {
+		scale = Math.max(MIN_SCALE, scale / 1.2);
+	}
+
+	// --- Utilidades originales ---
 	function previous(): void {
 		if (stepCount < 2) return;
 		currentIndex = (activeIndex - 1 + stepCount) % stepCount;
@@ -34,6 +108,14 @@
 	function next(): void {
 		if (stepCount < 2) return;
 		currentIndex = (activeIndex + 1) % stepCount;
+	}
+
+	function getCellDensityClass(cell: Set<string>): string {
+		const count = cell.size;
+		if (count >= 6) return 'density-xxs';
+		if (count >= 4) return 'density-xs';
+		if (count >= 3) return 'density-sm';
+		return '';
 	}
 
 	function renderCell(cell: Set<string>): string {
@@ -54,6 +136,7 @@
 	$effect(() => {
 		sentence;
 		currentIndex = 0;
+		resetTransform();
 	});
 </script>
 
@@ -119,35 +202,61 @@
 				{/if}
 			</p>
 
-			<div class="cyk-table" role="table" aria-label="Tabla triangular del algoritmo CYK">
-				{#each rows as row (row.length)}
-					<div
-						class="cyk-row"
-						class:current={row.length === activeLength}
-						class:pending={row.length > activeLength}
-						role="row"
-					>
-						{#each row.cells as cell, start}
-							<div
-								class="cyk-cell"
-								role="cell"
-								title={`Fragmento: ${fragment(start, row.length)}`}
-								aria-label={`Longitud ${row.length}, posición ${start + 1}: ${row.length <= activeLength ? [...cell].join(', ') || 'conjunto vacío' : 'pendiente'}`}
-							>
-								{#if row.length <= activeLength}
-									{@html renderCell(cell)}
-								{:else}
-									<span aria-hidden="true">·</span>
-								{/if}
-							</div>
-						{/each}
-					</div>
-				{/each}
+			<!-- Lienzo interactivo (Pan & Zoom) -->
+			<div class="interactive-stage">
+				<div class="zoom-toolbar">
+					<button type="button" onclick={zoomIn} aria-label="Aumentar zoom">+</button>
+					<button type="button" onclick={zoomOut} aria-label="Reducir zoom">−</button>
+					<button type="button" onclick={resetTransform} aria-label="Restablecer vista">↺</button>
+				</div>
 
-				<div class="token-row" role="row">
-					{#each result.tokens as token, index (`${token}-${index}`)}
-						<div role="columnheader">{@html renderMath(escapeMath(token))}</div>
-					{/each}
+				<div
+					class="canvas-viewport"
+					class:dragging={isDragging}
+					role="region"
+					aria-label="Lienzo interactivo de la tabla CYK (arrastra para mover, rueda para zoom)"
+					onpointerdown={handlePointerDown}
+					onpointermove={handlePointerMove}
+					onpointerup={handlePointerUp}
+					onpointercancel={handlePointerUp}
+					onwheel={handleWheel}
+				>
+					<div
+						class="canvas-transform"
+						style:transform={`translate(${translateX}px, ${translateY}px) scale(${scale})`}
+					>
+						<div class="cyk-table" role="table" aria-label="Tabla triangular del algoritmo CYK">
+							{#each rows as row (row.length)}
+								<div
+									class="cyk-row"
+									class:current={row.length === activeLength}
+									class:pending={row.length > activeLength}
+									role="row"
+								>
+									{#each row.cells as cell, start}
+										<div
+											class="cyk-cell {getCellDensityClass(cell)}"
+											role="cell"
+											title={`Fragmento: ${fragment(start, row.length)}`}
+											aria-label={`Longitud ${row.length}, posición ${start + 1}: ${row.length <= activeLength ? [...cell].join(', ') || 'conjunto vacío' : 'pendiente'}`}
+										>
+											{#if row.length <= activeLength}
+												<span class="cell-content">{@html renderCell(cell)}</span>
+											{:else}
+												<span aria-hidden="true">·</span>
+											{/if}
+										</div>
+									{/each}
+								</div>
+							{/each}
+
+							<div class="token-row" role="row">
+								{#each result.tokens as token, index (`${token}-${index}`)}
+									<div role="columnheader">{@html renderMath(escapeMath(token))}</div>
+								{/each}
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		{/if}
@@ -165,7 +274,6 @@
 			{/if}
 		{/if}
 	</div>
-
 </section>
 
 <style>
@@ -196,7 +304,6 @@
 		font-weight: 700;
 		color: #333333;
 	}
-
 
 	textarea {
 		display: block;
@@ -289,10 +396,67 @@
 		text-align: center;
 	}
 
+	/* --- Contenedor de Pan & Zoom --- */
+	.interactive-stage {
+		position: relative;
+		border: 1px solid #e0e0dc;
+		background: #fafaf9;
+		margin: 1rem 0;
+		overflow: hidden;
+	}
+
+	.zoom-toolbar {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		display: flex;
+		gap: 0.25rem;
+		z-index: 10;
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(2px);
+		padding: 0.2rem;
+		border: 1px solid #ccc;
+	}
+
+	.zoom-toolbar button {
+		width: 1.6rem;
+		height: 1.6rem;
+		font-size: 0.9rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+
+	.canvas-viewport {
+		width: 100%;
+		height: 420px;
+		cursor: grab;
+		overflow: hidden;
+		user-select: none;
+		touch-action: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.canvas-viewport.dragging {
+		cursor: grabbing;
+	}
+
+	.canvas-transform {
+		transform-origin: 0 0;
+		will-change: transform;
+		transition: none;
+	}
+
+	/* --- Tabla CYK --- */
 	.cyk-table {
-		--cell-size: clamp(3rem, 10vw, 5rem);
-		overflow-x: auto;
-		padding: 0.5rem 0 0.75rem;
+		--cell-size: clamp(3.2rem, 10vw, 5.5rem);
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.cyk-row,
@@ -311,13 +475,41 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0.35rem;
+		padding: 0.2rem 0.25rem;
 	}
 
 	.cyk-cell {
 		border: 0.5pt solid #777777;
 		background: #ffffff;
 		transition: background-color 120ms ease;
+		overflow: hidden;
+	}
+
+	.cell-content {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		max-width: 100%;
+		white-space: nowrap;
+	}
+
+	.cyk-cell.density-sm {
+		font-size: 0.85em;
+	}
+
+	.cyk-cell.density-xs {
+		font-size: 0.72em;
+	}
+
+	.cyk-cell.density-xxs {
+		font-size: 0.6em;
+	}
+
+	.cyk-cell :global(.katex),
+	.cyk-cell :global(.MathJax),
+	.cyk-cell :global(mjx-container) {
+		font-size: 1em !important;
+		max-width: 100%;
 	}
 
 	.cyk-row.current .cyk-cell {
@@ -371,6 +563,10 @@
 		.listing-header {
 			flex-direction: column;
 			gap: 0.2rem;
+		}
+
+		.canvas-viewport {
+			height: 320px;
 		}
 	}
 </style>

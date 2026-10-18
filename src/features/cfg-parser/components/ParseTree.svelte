@@ -8,6 +8,81 @@
 	}
 
 	let { tree, caption = 'árbol sintáctico' }: Props = $props();
+
+	let scale = $state(1);
+	let translateX = $state(0);
+	let translateY = $state(0);
+	let isDragging = $state(false);
+	let dragStartX = 0;
+	let dragStartY = 0;
+	let initialTx = 0;
+	let initialTy = 0;
+
+	const MIN_SCALE = 0.3;
+	const MAX_SCALE = 3.0;
+
+	function handlePointerDown(e: PointerEvent): void {
+		if (e.button !== 0) return;
+		isDragging = true;
+		dragStartX = e.clientX;
+		dragStartY = e.clientY;
+		initialTx = translateX;
+		initialTy = translateY;
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+	}
+
+	function handlePointerMove(e: PointerEvent): void {
+		if (!isDragging) return;
+		translateX = initialTx + (e.clientX - dragStartX);
+		translateY = initialTy + (e.clientY - dragStartY);
+	}
+
+	function handlePointerUp(e: PointerEvent): void {
+		if (!isDragging) return;
+		isDragging = false;
+		try {
+			(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+		} catch {
+		}
+	}
+
+	function handleWheel(e: WheelEvent): void {
+		e.preventDefault();
+		const zoomFactor = 1.1;
+		const direction = e.deltaY < 0 ? 1 : -1;
+		const newScale = Math.min(
+			MAX_SCALE,
+			Math.max(MIN_SCALE, direction > 0 ? scale * zoomFactor : scale / zoomFactor)
+		);
+
+		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		const mouseX = e.clientX - rect.left;
+		const mouseY = e.clientY - rect.top;
+
+		const ratio = newScale / scale;
+		translateX = mouseX - ratio * (mouseX - translateX);
+		translateY = mouseY - ratio * (mouseY - translateY);
+		scale = newScale;
+	}
+
+	function resetTransform(): void {
+		scale = 1;
+		translateX = 0;
+		translateY = 0;
+	}
+
+	function zoomIn(): void {
+		scale = Math.min(MAX_SCALE, scale * 1.2);
+	}
+
+	function zoomOut(): void {
+		scale = Math.max(MIN_SCALE, scale / 1.2);
+	}
+
+	$effect(() => {
+		tree;
+		resetTransform();
+	});
 </script>
 
 {#snippet treeNode(node: ParseTreeNode)}
@@ -34,11 +109,35 @@
 
 <figure class="parse-tree">
 	<figcaption>{caption}</figcaption>
-	<div class="tree-scroll">
-		<div class="tree" role="img" aria-label={caption}>
-			<ul>
-				{@render treeNode(tree)}
-			</ul>
+
+	<div class="interactive-stage">
+		<div class="zoom-toolbar" aria-label="Controles de navegación del árbol">
+			<button type="button" onclick={zoomIn} aria-label="Aumentar zoom">+</button>
+			<button type="button" onclick={zoomOut} aria-label="Reducir zoom">−</button>
+			<button type="button" onclick={resetTransform} aria-label="Restablecer vista">↺</button>
+		</div>
+
+		<div
+			class="canvas-viewport"
+			class:dragging={isDragging}
+			role="region"
+			aria-label={`Lienzo interactivo del ${caption} (arrastra para mover, rueda para zoom)`}
+			onpointerdown={handlePointerDown}
+			onpointermove={handlePointerMove}
+			onpointerup={handlePointerUp}
+			onpointercancel={handlePointerUp}
+			onwheel={handleWheel}
+		>
+			<div
+				class="canvas-transform"
+				style:transform={`translate(${translateX}px, ${translateY}px) scale(${scale})`}
+			>
+				<div class="tree" role="img" aria-label={caption}>
+					<ul>
+						{@render treeNode(tree)}
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 </figure>
@@ -58,14 +157,80 @@
 		letter-spacing: 0.04em;
 	}
 
-	.tree-scroll {
-		overflow-x: auto;
-		padding: 0.5rem 0 1rem;
+	.interactive-stage {
+		position: relative;
+		border: 1px solid #e0e0dc;
+		background: #fafaf9;
+		margin: 0.5rem 0 1rem;
+		overflow: hidden;
+	}
+
+	.zoom-toolbar {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		display: flex;
+		gap: 0.25rem;
+		z-index: 10;
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(2px);
+		padding: 0.2rem;
+		border: 1px solid #ccc;
+	}
+
+	.zoom-toolbar button {
+		width: 1.6rem;
+		height: 1.6rem;
+		font-size: 0.9rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+		border: 1px solid #000000;
+		background: #ffffff;
+		color: #000000;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	.zoom-toolbar button:hover,
+	.zoom-toolbar button:focus-visible {
+		background: #000000;
+		color: #ffffff;
+	}
+
+	.canvas-viewport {
+		width: 100%;
+		height: 400px;
+		cursor: grab;
+		overflow: hidden;
+		user-select: none;
+		touch-action: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		outline: none;
+	}
+
+	.canvas-viewport:focus-visible {
+		outline: 2px solid #000000;
+		outline-offset: -2px;
+	}
+
+	.canvas-viewport.dragging {
+		cursor: grabbing;
+	}
+
+	.canvas-transform {
+		transform-origin: 0 0;
+		will-change: transform;
+		transition: none;
 	}
 
 	.tree {
 		width: max-content;
 		min-width: 100%;
+		padding: 1.5rem;
 	}
 
 	.tree ul {
@@ -155,5 +320,11 @@
 	.tree-node.terminal {
 		border-style: dashed;
 		font-style: italic;
+	}
+
+	@media (max-width: 560px) {
+		.canvas-viewport {
+			height: 320px;
+		}
 	}
 </style>
