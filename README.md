@@ -10,6 +10,8 @@
 
 Implementación en TypeScript del algoritmo Cocke-Younger-Kasami (CYK) con programación dinámica. Determina si una frase pertenece al lenguaje generado por una CFG, reporta el tiempo de ejecución y construye el árbol de derivación (parse tree).
 
+**Demo del proyecto:** <https://cfg.rompich.me>
+
 ## 1. Requisitos y Ejecución
 
 ```sh
